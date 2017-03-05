@@ -43,3 +43,20 @@ class AstGenerator(object):
 
         tokens = tokens.asList()[0]
         return convert(tokens)
+
+    def calc(self, node):
+        #print(type(node))
+        if isinstance(node, str):
+            return int(node)
+        elif isinstance(node, Neg): # unary operator
+            return -1 * node.right
+        elif isinstance(node, Add): # binary operator
+            return self.calc(node.left) + self.calc(node.right)
+        elif isinstance(node, Sub):
+            return self.calc(node.left) - self.calc(node.right)
+        elif isinstance(node, Mult):
+            return self.calc(node.left) * self.calc(node.right)
+        elif isinstance(node, Div):
+            return self.calc(node.left) / self.calc(node.right)
+        else:
+            return None

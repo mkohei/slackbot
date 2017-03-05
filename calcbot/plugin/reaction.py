@@ -32,7 +32,7 @@ expression = infixNotation(
     ]
 )
 
-expr_regex = '[0-9()+*-/]+'
+expr_regex = '[0-9()+*-/ ]+'
 expr_matcher = re.compile(expr_regex)
 
 
@@ -64,7 +64,16 @@ def reaction_calc(message):
 def reaction_calc(message):
 	expr = message.body[u'text']
 	if expr_matcher.fullmatch(expr):
-		message.reply(str(expression.parseString(expr)))
+		result = expression.parseString(expr)
+		#print(result, type(result), result[0], type(result[0]))
+		val = result[0]
+		if isinstance(val, str):
+			val = int(val)
+		else:
+			val = ast.calc(val)
+		#print(val)
+		#message.reply(str(result))
+		message.reply(str(val))
 	else:
 		message.reply(DEFAULT_REPLY)
 
