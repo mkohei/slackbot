@@ -1,19 +1,36 @@
 # -*- coding: utf-8 -*-
 from slackbot.bot import listen_to
 from slackbot.bot import respond_to
-from pyparsing import Forward, Optional, oneOf, ZeroOrMore, Regex
+#from pyparsing import Forward, Optional, oneOf, ZeroOrMore, Regex
+from pyparsing import *
 import re
+from expr_ast import AstGenerator
 #import parse
+
+ast = AstGenerator()
 
 DEFAULT_REPLY = 'I can only understand formulas (composed {0,1,2,3,4,5,6,7,8,9,(,),+,-,*,/}'
 
 # 3. expression
+"""
 number = Regex(r"\d+(\.\d*)?([eE][+-]?\d+)?")
 term = Forward()
 factor = Forward()
 expression = Optional(oneOf("+ -")) + term + ZeroOrMore(oneOf("+ -") + term)
 term << (factor + ZeroOrMore(oneOf("* /") + factor))
 factor << (number | "(" + expression + ")")
+"""
+number = Regex(r"\d+(\.\d*)?([eE][+-]?\d+)?")
+UNARY, BINARY, TERNARY = 1, 2, 3
+factor = number
+expression = infixNotation(
+    factor,
+    [
+        (oneOf("+ -"), UNARY, opAssoc.RIGHT, ast.make_unary_op), # 符号が最優先
+        (oneOf("* /"), BINARY, opAssoc.LEFT, ast.make_binary_op), # 掛け算割り算は足し算より優先
+        (oneOf("+ -"), BINARY, opAssoc.LEFT, ast.make_binary_op),
+    ]
+)
 
 expr_regex = '[0-9()+*-/]+'
 expr_matcher = re.compile(expr_regex)
