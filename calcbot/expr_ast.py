@@ -49,7 +49,7 @@ class AstGenerator(object):
         if isinstance(node, str):
             return int(node)
         elif isinstance(node, Neg): # unary operator
-            return -1 * node.right
+            return -1 * self.calc(node.right)
         elif isinstance(node, Add): # binary operator
             return self.calc(node.left) + self.calc(node.right)
         elif isinstance(node, Sub):
@@ -59,4 +59,5 @@ class AstGenerator(object):
         elif isinstance(node, Div):
             return self.calc(node.left) / self.calc(node.right)
         else:
-            return None
+            raise Exception("ASTCalcException : " + str(node))
+
